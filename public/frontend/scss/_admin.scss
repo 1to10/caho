@@ -1,0 +1,134 @@
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.bg-teal {
+  background: $teal;
+}
+.bg-green {
+  background: $green;
+}
+.bg-yellow-green {
+  background: $yellow-green;
+}
+.bg-orange {
+  background: $orange;
+}
+.bg-light-green {
+  background: $yellow-green;
+}
+.bg-yellow {
+  background: $yellow;
+}
+.bg-smoke-gray {
+  background: $smoke-gray;
+}
+.bg-pink {
+  background: $pink;
+}
+.bg-blue-gray {
+  background: $blue-gray;
+}
+.box-header {
+  .box-title {
+    width: 30%;
+  }
+  .box-tools {
+    width: 70%;
+    text-align: right;
+    position: static;
+  }
+}
+
+.content-header {
+  h1 {
+    text-transform: capitalize;
+  }
+}
+.programCat {
+  margin-bottom: 30px;
+  height: 270px;
+  .small-box {
+    height: 100%;    
+    position: relative;
+    padding: 20px;
+    text-align: center;
+    .inner {
+      padding: 0;
+      
+    }
+    .user-count{
+      font-size: 16px;
+      display: block;
+      padding: 20px 0;
+      span{
+        font-weight: 800;
+        font-size: 40px;
+        vertical-align: sub;
+      }
+    }
+    h3 {
+      margin: 0 50px;
+      font-size: 18px;
+      line-height: 30px;
+    }
+    p {
+      margin: 0;
+      line-height: 20px;
+    }
+    .heading {
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      margin: 10px 0;
+      border-bottom: 1px solid #fff;
+      display: inline-block;
+      &:before {
+        display: none;
+      }
+    }
+    .locationlist {
+      height: 100px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      li {
+        a {
+          color: #fff;
+          &:hover {
+            color: $smoke-gray;
+          }
+        }
+        &:nth-of-type(1) {
+        }
+        &:nth-of-type(2) {
+        }
+        &:nth-of-type(3) {
+        }
+        &:nth-of-type(4) {
+        }
+        &:nth-of-type(5) {
+        }
+      }
+    }
+    .pro-cat-footer {
+      position: absolute;
+      bottom: 0;
+      display: block;
+      left: 0;
+      right: 0;
+    }
+  }
+}
+.fixed-sec {
+  text-align: center;
+  a {
+    background: $yellow;
+    padding: 4px 15px;
+    color: #fff;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+}

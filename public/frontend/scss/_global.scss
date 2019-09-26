@@ -1,0 +1,237 @@
+img {
+  max-width: 100%;
+  display: block;
+}
+ul {
+  margin: 0;
+  padding: 0;
+  li {
+    list-style: none;
+  }
+}
+a {
+  text-decoration: none;
+  cursor: pointer;
+}
+.default-btn {
+  padding: 12px 40px 12px 18px;
+  font-size: 14px;
+  color: #000;
+  display: inline-block;
+  text-transform: uppercase;
+  background: #fff;
+  border-radius: 100px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  position: relative;
+  @include transition(all linear 0.3s);
+  &:after {
+    position: absolute;
+    content: "";
+    width: 16px;
+    height: 12px;
+    right: 14px;
+    top: 14px;
+    background: url("../img/btn-arrow-dark.png") no-repeat 0 0;
+    @include transition(all linear 0.3s);
+  }
+  &:hover {
+    background: $orrange-color;
+    color: #fff;
+    &:after {
+      background: url("../img/btn-arrow-white.png") no-repeat 0 0;
+    }
+  }
+  &.orrange {
+    background: $orrange-color;
+    color: #fff;
+    &:after {
+      background: url("../img/btn-arrow-white.png") no-repeat 0 0;
+    }
+    &:hover {
+      background: #fff;
+      color: #000;
+      &:after {
+        background: url("../img/btn-arrow-dark.png") no-repeat 0 0;
+      }
+    }
+  }
+}
+p {
+  font-size: 16px;
+  line-height: 28px;
+  margin: 10px 0 0;
+  text-align: justify;
+  font-weight: $light-font;
+}
+.comon-sec {
+  padding: 40px 0;
+}
+.comon-sec-inner {
+  padding: 20px 0 50px;
+}
+.heading {
+  font-family: $ralway-font;
+  font-weight: $bold-font - 200;
+  font-size: 42px;
+  color: #000;
+  /*text-transform: uppercase;*/
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+  position: relative;
+  &:before {
+    position: absolute;
+    content: "";
+    width: 50px;
+    height: 8px;
+    background: $orrange-color;
+    left: 0;
+    bottom: 0;
+  }
+  &.short {
+    font-size: 24px;
+  }
+  span {
+    font-size: 18px;
+    display: block;
+  }
+  &.mid-short {
+    font-size: 36px;
+    text-transform: none;
+  }
+}
+.highlight-text {
+  font-size: 24px;
+  color: $orrange-color;
+  font-family: $ralway-font;
+  font-weight: $semibold-font;
+  img {
+    width: auto;
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+}
+.mt-10 {
+  margin-top: 10px;
+}
+.braedcrumb-sec {
+  ul {
+    display: flex;
+    justify-content: flex-end;
+  }
+  li {
+    font-size: 15px;
+    padding: 15px 0 15px 0;
+    text-transform: uppercase;
+    color: $orrange-color;
+    a {
+      padding-right: 25px;
+      margin-right: 5px;
+      color: #909090;
+      position: relative;
+      @include transition(all linear 0.3s);
+      &:hover {
+        color: $orrange-color;
+      }
+      &:after {
+        position: absolute;
+        content: ">";
+        color: #909090;
+        right: 4px;
+        font-size: 22px;
+        top: -6px;
+      }
+    }
+  }
+}
+ul.default-style {
+  li {
+    font-size: 16px;
+    padding-top: 10px;
+    font-weight: $light-font;
+    padding-left: 20px;
+    text-align: justify;
+    position: relative;
+    line-height: 28px;
+    &:before {
+      position: absolute;
+      content: "";
+      width: 9px;
+      height: 9px;
+      background: $orrange-color;
+      left: 0;
+      top: 18px;
+    }
+    b {
+      font-weight: $medium-font;
+    }
+    li {
+      padding-left: 0;
+      padding-top: 0;
+      &:before {
+        background: url("../img/arrow-short.png") no-repeat 0 0;
+        width: 14px;
+        height: 10px;
+        display: none;
+      }
+    }
+  }
+}
+button.btn-success {
+  width: 25px;
+  height: 22px;
+  background: url("../img/refresh-icon.png") no-repeat 0 0;
+  border: 0;
+  background: $green;
+  cursor: pointer;
+  &:focus {
+    outline: none;
+  }
+}
+
+button.big-btn {
+  width: 110px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+}
+.article-text {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  .left,
+  .right {
+    width: 48%;
+  }
+  .highlight-text {
+    font-size: 18px;
+    margin: 25px 0;
+  }
+  p {
+    span {
+      display: block;
+      color: $orrange-color;
+      font-weight: 600;
+    }
+    a {
+      color: $orrange-color;
+      transition: all linear 0.3s;
+      &:hover {
+        color: #000;
+      }
+    }
+  }
+}
+@keyframes nav-effect {
+  from {
+    opacity: 0;
+    top: 60px;
+  }
+  to {
+    opacity: 1;
+    top: 48px;
+  }
+}
+
+/*03-09-2019*/

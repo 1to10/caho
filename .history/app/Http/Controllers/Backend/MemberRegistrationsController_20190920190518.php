@@ -1,0 +1,322 @@
+<?php
+
+namespace App\Http\Controllers\Backend;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
+use Sentinel;
+use App\User;
+use App\Programs;
+use App\Category;
+use App\Registrations;
+use App\MembershipRegistrations;
+
+class MemberRegistrationsController extends Controller
+{
+    
+    public function __construct(){
+
+        $today = date('Y-m-d');
+        $this->categorylist = Category::where('status','=',1)->pluck('title', 'cat_slug');
+        $this->programlist = Programs::where('status','=',1)
+                                        ->whereRaw("DATE(program_enddate) >='$today'")
+                                       ->pluck('title', 'id');
+    }
+
+    /* Add */
+
+    ## Get 
+
+    public function Add(Request $request , $membershipid)
+    {
+
+        $courseslist='';
+        $categorylist =  $this->categorylist;
+        $programlist =  $this->programlist;
+        return view('dashboard.Members-Registrations.add-edit-'.$membershipid, compact('courseslist','categorylist','programlist','membershipid'));
+
+    }
+
+    ## Post 
+    public function postdata(Request $request , $membershipid)
+    {
+        
+        if($membershipid==1)
+        {
+            $validator =Validator::make($request->all(), [
+                'organization_name' => 'required|string|max:255',
+            ]);
+        }
+        elseif($membershipid==2)
+        {
+            $validator =Validator::make($request->all(), [
+                'organization_name' => 'required|string|max:255',
+            ]);
+        }
+        else
+        {
+            $validator =Validator::make($request->all(), [
+                'nominated_person' => 'required|string|max:255',
+            ]);
+        }
+        
+
+
+        if($validator->fails())
+        {
+            return redirect('dashboard/member-registrations/'.$membershipid.'/add/new')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+
+        if($request->ordering==''){
+            $input['ordering']='0';
+        }
+
+        $input['membershipid']=$membershipid;
+
+        $menudata=MembershipRegistrations::create($input);
+
+        $programid = $menudata->id;
+
+        ## Add data to Program Data 
+
+       
+
+        return redirect('dashboard/member-registrations/'.$membershipid)->with('success', 'Registration Added Successfully');
+    }
+
+
+    /* Edit */
+
+    public function GetEdit(Request $request , $membershipid, $id)
+    {
+        //dd($id);
+        $articles = MembershipRegistrations::find($id);
+
+        $courseslist='';
+       // dd($courseslist);
+         $categorylist =  $this->categorylist;
+         $programlist =  $this->programlist;
+        return 	view('dashboard.Members-Registrations.add-edit-'.$membershipid,compact('articles','courseslist','categorylist','programlist','membershipid'));
+    }
+
+    public function PostEdit(Request $request , $membershipid, $id)
+    {
+        //dd($request->all());
+
+        $artlist = MembershipRegistrations::find($id);
+
+       
+        //update post data
+
+
+        if($membershipid==1)
+        {
+            $validator =Validator::make($request->all(), [
+                'organization_name' => 'required|string|max:255',
+            ]);
+        }
+        elseif($membershipid==2)
+        {
+            $validator =Validator::make($request->all(), [
+                'organization_name' => 'required|string|max:255',
+            ]);
+        }
+        else
+        {
+            $validator =Validator::make($request->all(), [
+                'nominated_person' => 'required|string|max:255',
+            ]);
+        }
+        
+
+
+        if($validator->fails())
+        {
+            return redirect('dashboard/member-registrations/'.$membershipid.'/edit/'.$id)
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $input = $request->all();
+       
+        $artlist->update($input);
+
+
+        return redirect('dashboard/member-registrations/'.$membershipid)->with('success', 'Registration Update Successfully');
+    }
+
+    ## Listing 
+
+    public function listing(Request $request , $membershipid)
+    {
+        //$artlist = Registrations::all();
+
+        $artlist = MembershipRegistrations::where('membership_id','=',$membershipid);
+
+        $input = $request->all();
+        $Organization='';$classification='';$location='';$city='';$state='';$programstatus='';
+        $membertype="";$fromdate="";$enddate="";
+
+        
+
+        if(isset($input['Organization']))
+        {
+            $Organization = $input['Organization'];
+            if($Organization){
+                $artlist = $artlist->where('organization_name','=',"$Organization");
+            }
+        }
+       
+        if(isset($input['classification']))
+        {
+            $classification = $input['classification'];
+            if($classification){
+                $artlist = $artlist->where('classification','LIKE',"$classification");
+            }
+        }
+       
+        
+
+        if(isset($input['city']))
+        {
+            $city = $input['city'];
+            if($city){
+                $artlist = $artlist->where('city','LIKE',"$city");
+            }
+        }
+
+        if(isset($input['state']))
+        {
+            $state = $input['state'];
+            if($state){
+                $artlist = $artlist->where('state','LIKE',"$state");
+            }
+        }
+
+        if(isset($input['fromdate']) && isset($input['enddate']))
+        {
+            //$membertype = $input['membertype'];
+            $fromdate = $input['fromdate'];
+            $enddate = $input['enddate'];
+
+            if($fromdate && $enddate)
+            {
+                $fromdate = date('Y-m-d',strtotime($fromdate));
+                $enddate = date('Y-m-d',strtotime($enddate));
+                //$artlist = $artlist->whereRaw("DATE(MemberValidity) >='$enddate'");
+
+                $artlist = $artlist->whereBetween('MemberValidity', array($fromdate, $enddate));
+            }
+            
+        }
+
+        $current=1;
+
+       
+       
+
+        $citylist = MembershipRegistrations::select('city')
+            ->where('membership_id', $membershipid)
+            ->distinct()->orderby('city','ASC')->get();
+        $statelist = MembershipRegistrations::select('state')
+                ->where('membership_id', $membershipid)
+                ->distinct()->orderby('state','ASC')->get();
+        $program_locationlist = MembershipRegistrations::select('organization_name')
+                        ->where('membership_id', $membershipid)
+                        ->distinct()->orderby('organization_name','ASC')->get();
+                        
+
+        $categorylist = MembershipRegistrations::select('classification')
+                        ->where('membership_id', $membershipid)
+                        ->distinct()->orderby('classification','ASC')->get();
+
+        
+        
+        $artlist = $artlist->get();
+
+         //dd($artlist->toSql());
+
+        // $categorylist =  $this->categorylist;
+        
+
+         
+        $arrplan = array(1=>'REGULAR MEMBERSHIP INSTITUTION',2=>'ASSOCIATE MEMBERSHIP INSTITUTION',3=>'ASSOCIATE MEMBERSHIP INDIVIDUAL');
+        $planname = $arrplan[$membershipid];
+
+        return 	view('dashboard.Members-Registrations/listing',['articles'=>$artlist,'categorylist'=>$categorylist,
+       'citylist'=>$citylist,'statelist'=>$statelist,
+        'program_locationlist'=>$program_locationlist,'Organization'=>$Organization,'classification'=>$classification,'location'=>$location,'city'=>$city
+        ,'state'=>$state,'membershipid'=>$membershipid,'planname'=>$planname,'fromdate'=>$fromdate,'enddate'=>$enddate]);
+    }
+
+    
+
+    /* Actions  */
+
+    public function activate(Request $request,$membershipid,$id)
+    {
+        $artlist = MembershipRegistrations::find($id);
+        $artlist->update(array('status' => '1'));
+        return redirect('dashboard/registrations/'.$membershipid)->with('success', 'Success! The registration is activated successfully.');
+    }
+
+    public function deactivate(Request $request,$membershipid,$id){
+        $artlist = MembershipRegistrations::find($id);
+        $artlist->update(array('status' => '0'));
+        return redirect('dashboard/registrations/'.$membershipid)->with('success', 'Success! The registration is deactivated successfully.');
+    }
+
+    public function destroy(Request $request,$membershipid,$id)
+    {
+        //dd($id);
+        $artlist = MembershipRegistrations::findOrFail($id);
+        $artlist->delete();
+        return redirect('dashboard/registrations/'.$membershipid)->with('success', 'Success! registration is deleted successfully.');
+    }
+
+
+    public function PostBulkAction(Request $request,$membershipid)
+    {
+       
+        if($request->action=="Active")
+        {
+
+            foreach ($request->chkid as $id)
+            {
+                $artlist = Registrations::find($id);
+                $artlist->update(array('status' => '1'));
+            }
+
+            return redirect('dashboard/registrations/'.$membershipid)->with('success', 'registrations Status Updated Successfully');
+        }
+
+
+        if($request->action=="Inactive")
+        {
+            foreach ($request->chkid as $id)
+            {
+                $artlist = Registrations::find($id);
+                $artlist->update(array('status' => '0'));
+            }
+            return redirect('dashboard/registrations/'.$membershipid)->with('success', 'registrations Status Updated Successfully');
+        }
+
+        if($request->action=="Delete")
+        {
+            $delete = Registrations::whereIn('id', $request->chkid)->delete();
+            //dd($dues);
+            return redirect('dashboard/registrations/'.$membershipid)->with('success', 'registrations Delete Successfully');
+        }
+
+
+
+    }
+
+   
+
+}
